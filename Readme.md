@@ -1,4 +1,4 @@
-# 🔒️🥷 Super Simple and robust Password Generator 🔒️🥷
+# 🔒️🥷 Super Simple And Robust Password Generator 🔒️🥷
 
 ## What Is That ? 🙊
 > This is a very simple but yet robust way to generate words based password to cognitively memorize faster (temporary) 
