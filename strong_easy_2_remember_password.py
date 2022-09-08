@@ -9,11 +9,6 @@ from random import seed
 from random import choice
 import time
 
-# from https://github.com/dwyl/english-words
-DEFAULT_URL_EN_DICTIONARY: str = (
-    "https://raw.githubusercontent.com/dwyl/english-words/master/words_alpha.txt"
-)
-
 
 def count_line_fast(file_descriptor) -> int:
     """
@@ -40,26 +35,20 @@ class GenerateEasy2RememberPassword:
     Helps generating easy to remember Password from given dictionnary
     """
 
-    # English words dic from https://github.com/dwyl/english-words
-    DEFAULT_URL_EN_DICTIONARY: str = (
-        "https://raw.githubusercontent.com/dwyl/english-words/master/words_alpha.txt"
-    )
-
     def __init__(
         self,
+        url_dict,
         words: int = 2,
         min_length: int = 30,
         special_characters: int = 1,
         separator: str = "_",
-        url_dict: Optional[str] = DEFAULT_URL_EN_DICTIONARY,
     ):
         """
         :param words: Num of words the pwd will contain
         :param min_length: Minimum length of the password to generate
         :param special_characters: Number of special characters included in the password
-        :param url_dict: The URL to get the dictionary of words to generate the password,
+        :param url_dict: The URL to get the dictionary of words to generate the password
         :param separator: Separator string betwin each words, default "_"
-        default set to "DEFAULT_URL_DICTIONARY
         """
         self.words = words
         self.min_length = min_length
@@ -88,7 +77,10 @@ class GenerateEasy2RememberPassword:
     def get_random_special_characters(num: int) -> Optional[str]:
         if num > 0:
             random_str = "".join(
-                [random.choice('!"#$%&\'()*+,-./:;<=>?@[]^`{|}~' + string.digits) for _ in range(num)]
+                [
+                    random.choice("!\"#$%&'()*+,-./:;<=>?@[]^`{|}~" + string.digits)
+                    for _ in range(num)
+                ]
             )
             logging.info(f"Random characters: {random_str}")
             return random_str
@@ -118,9 +110,9 @@ class GenerateEasy2RememberPassword:
                     max_words = count_line_fast(dic_file)
                     logging.info(f"lines: {max_words}")
                 # Get random special characters
-                special_character_list: Optional[str] = self.get_random_special_characters(
-                    self.special_characters
-                )
+                special_character_list: Optional[
+                    str
+                ] = self.get_random_special_characters(self.special_characters)
                 logging.info(f"special_character_list: {special_character_list}")
                 random_words: List[str] = []
                 # generate the random list of integer to get the word from
@@ -138,8 +130,13 @@ class GenerateEasy2RememberPassword:
                 current_pwd_size = self.special_characters
                 with open(tempfile.name, "r") as file_descriptor:
                     for current_word in file_descriptor:
-                        current_word: str = current_word.strip().lower().capitalize()
-                        if len(random_words) >= self.words and current_pwd_size >= self.min_length:
+                        current_word: str = (
+                            current_word.strip().lower().capitalize().replace(" ", "")
+                        )
+                        if (
+                            len(random_words) >= self.words
+                            and current_pwd_size >= self.min_length
+                        ):
                             logging.info("Fetch all words needed")
                             break
                         if line_words[index] == line:

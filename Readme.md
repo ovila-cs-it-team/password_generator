@@ -14,6 +14,13 @@
 > The result will take the following format:
 > 
 >     [WORD1][SEPARATORS][WORD2][SEPARATORS]...[WORDN][SEPARATORS][SPECIAL_CHARACTER]
+> 
+> You can specify the URL of the file with `url_dict` argument and provide such file :
+> 
+> - https://raw.githubusercontent.com/Taknok/French-Wordlist/master/francais.txt
+> - https://raw.githubusercontent.com/dwyl/english-words/master/words_alpha.txt
+> - http://math.oxford.emory.edu/site/math117/probSetAllTogether/words.txt
+> - Find some more: https://github.com/dwyl/english-words
 
 
 ## How to Use It ? 🙈
@@ -23,11 +30,11 @@
     if __name__ == "__main__":
         print("Here you go 🙈:")
         gen_pwd = GenerateEasy2RememberPassword(
+            url_dict="https://raw.githubusercontent.com/Taknok/French-Wordlist/master/francais.txt",
             words=2,
             special_characters=2,
             separator="_",
             min_length=15,
-            url_dict="https://raw.githubusercontent.com/dwyl/english-words/master/words_alpha.txt",
         )
         print(
             gen_pwd.generate
