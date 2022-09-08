@@ -9,9 +9,6 @@ from random import seed
 from random import choice
 import time
 
-# Set Randome seed on every launch
-seed(time.time())
-
 # from https://github.com/dwyl/english-words
 DEFAULT_URL_EN_DICTIONARY: str = (
     "https://raw.githubusercontent.com/dwyl/english-words/master/words_alpha.txt"
@@ -70,23 +67,14 @@ class GenerateEasy2RememberPassword:
         self.separator = separator
         self.url_dict = url_dict
 
-    def get_random_special_characters(self, num: int) -> Optional[str]:
-        if num > 0:
-            random_str = "".join(
-                [random.choice(string.punctuation + string.digits) for _ in range(num)]
-            )
-            logging.info(f"Random characters: {random_str}")
-            return random_str
-        raise ValueError(f"Invalid random characters number: {num}")
-
     @staticmethod
     def get_random_list_of_int(
         max_num: int, length: int, extra_words: int = 0
     ) -> List[int]:
         """
 
-        :param max_num:
-        :param length:
+        :param max_num: Max number of words to pick from
+        :param length: Number of random number to return.
         :param extra_words: Number of extra random int you want
         :return:
         """
@@ -94,14 +82,29 @@ class GenerateEasy2RememberPassword:
         sequence = [i for i in range(max_num)]
         result = [choice(sequence) for _ in range(length + extra_words)]
         result.sort()
-
         return result
 
-    def generate_password(self) -> str:
+    @staticmethod
+    def get_random_special_characters(num: int) -> Optional[str]:
+        if num > 0:
+            random_str = "".join(
+                [random.choice('!"#$%&\'()*+,-./:;<=>?@[]^`{|}~' + string.digits) for _ in range(num)]
+            )
+            logging.info(f"Random characters: {random_str}")
+            return random_str
+        raise ValueError(f"Invalid random characters number: {num}")
+
+    @property
+    def generate(self) -> str:
         """
-        :return: The generated paswword in string format
+        Download the dictionary in temporary directory, no persistence.
+        Loop over the downloaded file line by line, not entirely bufferized to avoid stack overflow issues
+        and memory overflow issues.
+        :return: The generated pasword in string format
         """
-        ...
+        # Set Random seed on every call to guaranty the randomness of the random package
+        seed(time.time())
+
         with NamedTemporaryFile(prefix="data_") as tempfile:
             # download the dictionary of words
             response: Response = requests.get(self.url_dict)
@@ -110,6 +113,7 @@ class GenerateEasy2RememberPassword:
                 tempfile.write(response.content)
 
                 # Get the number of line of the dic file
+                logging.info("Computing the number of line in the downloaded resource")
                 with open(tempfile.name, "r") as dic_file:
                     max_words = count_line_fast(dic_file)
                     logging.info(f"lines: {max_words}")
@@ -152,16 +156,3 @@ class GenerateEasy2RememberPassword:
                 generated_password = f"{self.separator}".join(random_words)
                 return generated_password
 
-
-if __name__ == "__main__":
-    print("Here you go 🙈:")
-    gen_pwd = GenerateEasy2RememberPassword(
-        words=2,
-        special_characters=2,
-        separator="_",
-        min_length=15,
-        url_dict="https://raw.githubusercontent.com/dwyl/english-words/master/words_alpha.txt",
-    )
-    print(
-        gen_pwd.generate_password()
-    )
