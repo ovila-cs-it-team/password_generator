@@ -22,17 +22,17 @@ def count_line_fast(file_descriptor) -> int:
             yield b
             b = reader(1024 * 1024)
 
-    def raw_gen_count(file):
+    def _raw_gen_count(file):
         f_gen = __make_gen(file.read)
 
         return sum(buf.count("\n") for buf in f_gen)
 
-    return raw_gen_count(file_descriptor)
+    return _raw_gen_count(file_descriptor)
 
 
 class GenerateEasy2RememberPassword:
     """
-    Helps generating easy to remember Password from given dictionnary
+    Helps generating easy to remember Password from given dictionary
     """
 
     def __init__(
@@ -90,7 +90,7 @@ class GenerateEasy2RememberPassword:
     def generate(self) -> str:
         """
         Download the dictionary in temporary directory, no persistence.
-        Loop over the downloaded file line by line, not entirely bufferized to avoid stack overflow issues
+        Loop over the downloaded file line by line, not entirely buffered to avoid stack overflow issues
         and memory overflow issues.
         :return: The generated pasword in string format
         """
@@ -131,7 +131,7 @@ class GenerateEasy2RememberPassword:
                 with open(tempfile.name, "r") as file_descriptor:
                     for current_word in file_descriptor:
                         current_word: str = (
-                            current_word.strip().lower().capitalize().replace(" ", "")
+                            current_word.strip().lower().capitalize().replace(" ", self.separator)
                         )
                         if (
                             len(random_words) >= self.words
